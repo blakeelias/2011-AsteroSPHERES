@@ -16,7 +16,7 @@ static int state; //DECL::VAR::state
 
 void ZRUser01(float *myState, float *otherState, float time)
 {
-  //BEGIN::PROC::ZRUser
+//BEGIN::PROC::ZRUser
 #define PI  3.141593
 #define TAU (2*PI)
  
@@ -27,7 +27,6 @@ void ZRUser01(float *myState, float *otherState, float time)
 #define angleStep         (procvar[10])
 #define angleTarget       (procvar[11])
 
-  float indigens_2D[3] = {0, 0.6, 0};
   int i;
   float speed;
   float angularVelocity;
@@ -35,28 +34,43 @@ void ZRUser01(float *myState, float *otherState, float time)
   float points;
   float velTarget[3];
   float distanceToCircle[3];
-  float circleStartPoint[3] = {0, 0.6, 0};
+  float circleStartPoint[3];
 
   if (time < 1) {
-    memset(procvar, 0, 13);
-    radius = 0.25;
-    angleStep = TAU / 16;
-    angleTarget = TAU / 4;
-    DEBUG(("time, current_radius, angularVelocity, angleTarget, pointTotal, points rate\n"));
-    circleStartPoint[1] -= radius;
+   DEBUG(("time, angleTarget\n"));
   }
 
-  if (1 == state) {
+  radius = 0.25;
+  angleStep = TAU / 16;
 
+  center[0] = 0;
+  center[1] = 0.6;
+  center[2] = 0;
+
+  circleStartPoint[0] = 0;
+  circleStartPoint[1] = 0.35;
+  circleStartPoint[2] = 0;
+
+  DEBUG(("target point: %f, %f, %f\n", circleStartPoint[0],circleStartPoint[1],circleStartPoint[2]));
+  angleTarget = -TAU / 4;        // and record the initial angular position
+  
+  
+  if (0 == state) {
+    ZRSetPositionTarget(circleStartPoint);
+    mathVecSubtract(distanceToCircle, myState, circleStartPoint, 3);
+    if (mathVecMagnitude(distanceToCircle, 3) < 0.02) {
+      state = 1;
+      DEBUG(("Got to the circle!\n"));
+    }
+  }
+
+
+  if (1 == state) {
     desiredAngularVelocity = 4.0 * PI / 180;
 
-    posTarget[0] = radius * cos(angleTarget) + circleStartPoint[0];
-    posTarget[1] = radius * sin(angleTarget) + circleStartPoint[1];
+    posTarget[0] = radius * cos(angleTarget) + center[0];
+    posTarget[1] = radius * sin(angleTarget) + center[1];
 
-    speed = mathVecMagnitude(&myState[3], 3); // magnitude of the velocity vector
-    angularVelocity = speed / radius;
-    points = (0.05 / 4) * (4 - fabs(4 - (angularVelocity * 180 / PI)));
-    pointTotal = pointTotal + points;
 
     if (sqrt(mathSquare(myState[0] - posTarget[0]) +
 	     mathSquare(myState[1] - posTarget[1]) +
@@ -74,36 +88,17 @@ void ZRUser01(float *myState, float *otherState, float time)
 
     ZRSetVelocityTarget(velTarget);
 
-    // connect radius from center to current position
-    for (i = 0; i < 3; i++) {
-      current_radius[i] = myState[i] - center[i];
-    }
-  }
-
-  else {
-    ZRSetPositionTarget(circleStartPoint);
-    mathVecSubtract(distanceToCircle, myState, circleStartPoint, 3);
-    if (mathVecMagnitude(distanceToCircle, 3) < 0.02) {
-      state = 1;
-      DEBUG(("Got to the circle!"));
-    }
-  }
-
-  DEBUG(("%f, %f, %f, %f, %f, %f\n",
-	 time,
-	 mathVecMagnitude(current_radius, 3),
-	 angularVelocity,
-	 angleTarget,
-	 pointTotal,
-	 points));
-  //END::PROC::ZRUser
+    DEBUG(("%f, %f\n",
+	   time,
+	   angleTarget));
+//END::PROC::ZRUser
 }
 void ZRInit01()
 {
-  //BEGIN::PROC::ZRInit
-  memset(procvar,0,sizeof(float)*12);
-  pointTotal = 0.0f;
-  state = 0;
-  //END::PROC::ZRInit
+//BEGIN::PROC::ZRInit
+memset(procvar,0,sizeof(float)*12);
+pointTotal = 0.0f;
+state = 0;
+//END::PROC::ZRInit
 }
 //User-defined procedures
