@@ -1,21 +1,22 @@
-void Orbit(float center[3], float radius){
+void Orbit(float center[3], float radius, float myState[3]){
 
 float desiredAngularVelocity;
 float velTarget[3];
 float angleTarget;
+float posTarget[3];
+float currentAngle;
 
-    angleStep = TAU * radius / 4;
+currentAngle = atan2(myState[1] - center[1], myState[0] - center[0]);
 
-desiredAngularVelocity = 2.0 * TAU / 180;
+  //tweak angleStep as neccesary
+angleStep = TAU * radius / 4;
+
+desiredAngularVelocity = TAU / 90;
+
+angleTarget = currentAngle + angleStep;
 
 posTarget[0] = radius * cos(angleTarget) + center[0];
 posTarget[1] = radius * sin(angleTarget) + center[1];
-
-if (sqrt(mathSquare(myState[0] - posTarget[0]) +
-         mathSquare(myState[1] - posTarget[1]) +
-         mathSquare(myState[2] - posTarget[2])) < 0.05) {
-    angleTarget += angleStep;
-}
 
 velTarget[0] = posTarget[0] - myState[0];
 velTarget[1] = posTarget[1] - myState[1];
