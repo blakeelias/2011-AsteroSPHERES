@@ -5,6 +5,7 @@ float velTarget[3];
 float angleTarget;
 float posTarget[3];
 float currentAngle;
+float angleStep;
 
 currentAngle = atan2(myState[1] - center[1], myState[0] - center[0]);
 
