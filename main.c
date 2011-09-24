@@ -70,8 +70,7 @@ void ZRUser01(float *myState, float *otherState, float time)
   }
   else {
     ZRSetPositionTarget(circleStartPoint);
-    mathVecSubtract(distanceToCircle, myState, circleStartPoint, 3);
-    if (mathVecMagnitude(distanceToCircle, 3) < 0.02) {
+    if (VDist(myState, circleStartPoint) < 0.02) {
      state = 1;
      DEBUG(("Got to the circle!"));
     }
