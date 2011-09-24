@@ -62,7 +62,7 @@ void ZRUser01(float *myState, float *otherState, float time)
   
 
   if (time < 1) {
-    DEBUG(("time, current_radius, angularVelocity, angleTarget, pointTotal, points rate\n"));
+    DEBUG(("time, speed\n"));
   }
   
   if (1 == state) {
@@ -78,6 +78,12 @@ void ZRUser01(float *myState, float *otherState, float time)
      DEBUG(("Got to the circle!"));
     }
   }
+  
+  speed = mathVecMagnitude(&myState[3], 3); // magnitude of the velocity vector
+  
+  DEBUG(("%f, %f\n",
+	 time,
+	 speed));
 }
 void ZRInit01()
 {
