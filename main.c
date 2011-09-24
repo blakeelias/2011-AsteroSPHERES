@@ -25,9 +25,9 @@ void ZRUser01(float *myState, float *otherState, float time)
   center[1] = 0.6;
   center[2] = 0;
 
-  radius = .25;
+  radius = .4;
   
-  circleStartPoint[0] = 0.25;
+  circleStartPoint[0] = 0.4;
   circleStartPoint[1] = 0.6;
   circleStartPoint[2] = 0;
   
