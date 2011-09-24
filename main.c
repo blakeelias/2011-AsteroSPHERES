@@ -49,6 +49,17 @@ void ZRUser01(float *myState, float *otherState, float time)
   float radius;
   float circleStartPoint[3];
   float distanceToCircle[3];
+  float Dstation1; //distance from current position to station 1
+  float Dstation2;
+  float station1[3];//coords of station1
+  float station2[3];//coords of station2
+  
+  station1[0] = 0.6;
+  station1[1] = 0.0;
+  station1[2] = 0.0;
+  station2[0] = -0.6;
+  station2[1] = 0.0;
+  station2[2] = 0.0;
 
   center[0] = 0;
   center[1] = 0.6;
@@ -73,6 +84,18 @@ void ZRUser01(float *myState, float *otherState, float time)
     if (VDist(myState, circleStartPoint) < 0.02) {
      state = 1;
      DEBUG(("Got to the circle!"));
+    }
+  }
+  if (2 == state) {//go to nearest mining station
+    //station1: 0.6, 0.0
+    //station2: -0.6, 0.0
+    Dstation1 = sqrt(pow((myState[0] - 0.6), 2), pow((myState[1] - 0.0), 2));
+    Dstation2 = sqrt(pow((myState[0] + 0.6), 2), pow((myState[1] - 0.0), 2));
+    if(station1 < station2){
+      ZRSetPositionTarget(station1);
+    }
+    else{
+      ZRSetPositionTarget(station2);
     }
   }
 }
