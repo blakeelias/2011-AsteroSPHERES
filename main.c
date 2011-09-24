@@ -76,15 +76,15 @@ void ZRUser01(float *myState, float *otherState, float time)
     DEBUG(("time, current_radius, angularVelocity, angleTarget, pointTotal, points rate\n"));
   }
   
-  if (1 == state) {
-    Orbit(center, radius, myState);   
-  }
-  else {
+  if (0 == state) {
     ZRSetPositionTarget(circleStartPoint);
     if (VDist(myState, circleStartPoint) < 0.02) {
-     state = 1;
-     DEBUG(("Got to the circle!"));
+      state = 1;
+      DEBUG(("Got to the circle!"));
     }
+  }
+  if (1 == state) {
+    Orbit(center, radius, myState);
   }
   if (2 == state) {//go to nearest mining station
     //station1: 0.6, 0.0
