@@ -85,6 +85,9 @@ void ZRUser01(float *myState, float *otherState, float time)
   }
   if (1 == state) {
     Orbit(center, radius, myState);
+    if(time >= 160) {
+      state = 2;
+    }
   }
   if (2 == state) {//go to nearest mining station
     //station1: 0.6, 0.0
