@@ -91,7 +91,7 @@ void ZRUser01(float *myState, float *otherState, float time)
     //station2: -0.6, 0.0
     Dstation1 = sqrt(pow((myState[0] - 0.6), 2), pow((myState[1] - 0.0), 2));
     Dstation2 = sqrt(pow((myState[0] + 0.6), 2), pow((myState[1] - 0.0), 2));
-    if(station1 < station2){
+    if(Dstation1 < Dstation2){
       ZRSetPositionTarget(station1);
     }
     else{
