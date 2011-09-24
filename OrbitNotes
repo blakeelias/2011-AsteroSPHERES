@@ -1,0 +1,3 @@
+Despite point gainage nearing the limit for solo-orbit Indigens (0.065) at 0.063.... points/s, when rate * time (120s), the result is not what is displayed. The points accrued according to the menu is less than what would be accrued mathematically.
+
+Points yield reaches a maximum at an angular velocity of 4degrees/s or 0.069813rad/s. Angular velocity of the sphere is significantly lower at ~0.05
