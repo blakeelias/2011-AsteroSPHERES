@@ -69,7 +69,10 @@ void ZRUser01(float *myState, float *otherState, float time)
     Orbit(center, radius, myState);   
   }
   else {
-    ZRSetPositionTarget(circleStartPoint);
+    float velTarget[3];
+    VPoint(myState, circleStartPoint, velTarget);
+    VMult(velTarget, radius * TAU / 90, velTarget);
+    ZRSetVelocityTarget(velTarget)
     if (VDist(myState, circleStartPoint) < 0.02) {
      state = 1;
      DEBUG(("Got to the circle!"));
