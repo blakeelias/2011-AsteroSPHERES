@@ -15,7 +15,6 @@ static unsigned char SphereNumber; //DECL::VAR::SphereNumber
 static char getShield; //DECL::VAR::getShield
 static char asteroid; //DECL::VAR::asteroid
 static void shoot (float myState[12], float target[3], unsigned int fire); //DECL::PROC::shoot
-static float timeToMS (float myState[12], float station[3]); //DECL::PROC::timeToMS
 static void orbit (float myState[12], float center[3], unsigned char CCW); //DECL::PROC::orbit
 
 void ZRUser01(float *myState, float *otherState, float time)
@@ -23,14 +22,11 @@ void ZRUser01(float *myState, float *otherState, float time)
 //BEGIN::PROC::ZRUser
 float indigens[3] = {0.0, 0.6, 0.0};
 float opulens[3] = {0.0, -0.6, 0.0};
-float station1[3] = {0.6, 0.0, 0.0};
-float station2[3] = {-0.6, 0.0, 0.0};
 float laser1[3] = {0.4, 0.0, 0.0};
 float laser2[3] = {-0.4, 0.0, 0.0};
 float shield[3] = {0.0, 0.4, 0.0};
 float zero[3] = {0.0, 0.0, 0.0};
 float difference[3];
-float *Station;
 float *Asteroid;
 
 
@@ -45,13 +41,8 @@ switch((int)time)
     case 61:
         asteroid = (PinAsteroid(otherState) == 1) ? 1 : 0;
         break;
-    case 90:
-        asteroid = (PisRevolving(otherState) == 2 && !asteroid) ? 1 : asteroid;
-        break;
 }
 
-
-Station = (SphereNumber == 1) ? station1 : station2; //station closer to where you started
 Asteroid = asteroid ? opulens : indigens;
 
 
@@ -86,14 +77,9 @@ switch(state)
             shoot(myState, opulens, (PgetPhase() > 1));
             return;
         }
-        orbit(myState, Asteroid, Station == station2);
-        if(time + timeToMS(myState, Station) >= 165)
-            state = 3;
+        orbit(myState, Asteroid, 1);
         break;
         
-    default:
-        ZRSetPositionTarget(Station);
-        break;
 }
 //END::PROC::ZRUser
 }
@@ -120,21 +106,6 @@ ZRSetAttitudeTarget(direction);
 if (fire && (acos(mathVecInner(&myState[6], direction, 3) / mathVecMagnitude(&myState[6], 3)) < (0.1)))
     Plaser();
 //END::PROC::shoot
-}
-static float timeToMS (float myState[12], float station[3])
-{
-//BEGIN::PROC::timeToMS
-// distance / average velocity
-// + time to turn around
-float toStation[3];
-
-//this is ugly so that code can fit
-mathVecSubtract(toStation, station, myState, 3);
-return (mathVecMagnitude(toStation, 3) / 0.065) + 
-(acos(mathVecInner(&myState[3], toStation, 3)/(mathVecMagnitude(&myState[3],3)*mathVecMagnitude(toStation,3)))/18) +
-((0.06 - mathVecMagnitude(&myState[3], 3)) / .01) +
-8;
-//END::PROC::timeToMS
 }
 static void orbit (float myState[12], float center[3], unsigned char CCW)
 {
