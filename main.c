@@ -17,11 +17,10 @@ static char asteroid; //DECL::VAR::asteroid
 static void orbit (float myState[12], float center[3], unsigned char CCW); //DECL::PROC::orbit
 static float Vfunc (int which, float *v1, float *v2, float *vresult, float scalar); //DECL::PROC::Vfunc
 static float timeToMS (float myState[12], float station[3]); //DECL::PROC::timeToMS
-static float shoot (float myState[12], float target[3], unsigned int fire, char shooter, unsigned int otherSatellite); //DECL::PROC::shoot
+static void shoot (float myState[12], float target[12], unsigned int fire, char shooter, unsigned int otherSatellite); //DECL::PROC::shoot
 
 void ZRUser01(float *myState, float *otherState, float time)
 {
-//BEGIN::PROC::ZRUser
 //BEGIN::PROC::ZRUser
 #define VLen(a) mathVecMagnitude((a), 3) 
   //finds magnitude, returns float
@@ -105,7 +104,7 @@ switch(state)
         
     case 2:
         if(PiceHits() < 14 && !asteroid)
-	shoot(myState, opulens, (PgetPhase() > 1), 'L', 0);
+    shoot(myState, opulens, (PgetPhase() > 1), 'L', 0);
         if(!(PiceMelted()) && asteroid)
         {
             mathVecSubtract(difference, myState, opulens, 3);
@@ -132,7 +131,6 @@ switch(state)
         ZRSetPositionTarget(Station);
         break;
 }
-
 //END::PROC::ZRUser
 }
 void ZRInit01()
@@ -140,7 +138,7 @@ void ZRInit01()
 //BEGIN::PROC::ZRInit
 state = 0;
 SphereNumber = 0;
-getShield = 1;
+getShield = 0;
 asteroid = 0;
 //END::PROC::ZRInit
 }
@@ -149,19 +147,33 @@ static void orbit (float myState[12], float center[3], unsigned char CCW)
 {
 //BEGIN::PROC::orbit
 float difference[3], target[3];
+
 float theta;
+
 float thetastep = .66;
 
+
+
 mathVecSubtract(difference, myState, center, 3);
+
 theta = atan2(difference[1], difference[0]);
 
+
+
 if(CCW)
+
     thetastep *= -1;
 
+
+
 theta += thetastep;
+
 difference[0] = .4 * cos(theta);
+
 difference[1] = .4 * sin(theta);
+
 mathVecAdd(target, center, difference, 3);
+
 ZRSetPositionTarget(target);
 //END::PROC::orbit
 }
@@ -172,7 +184,7 @@ int i;
 
 if (which == 4) { // vresult = scalar * v1
     for (i = 0; i < 3; ++i)
-		vresult[i] = scalar * v1[i];
+    	vresult[i] = scalar * v1[i];
 	return 0;
 }
 
@@ -233,56 +245,112 @@ static float timeToMS (float myState[12], float station[3])
 {
 //BEGIN::PROC::timeToMS
 // distance / average velocity
+
 // + time to turn around
+
 float toStation[3];
 
+
+
 //this is ugly so that code can fit
+
 mathVecSubtract(toStation, station, myState, 3);
+
 return (mathVecMagnitude(toStation, 3) / 0.065) + 
+
 (acos(mathVecInner(&myState[3], toStation, 3)/(mathVecMagnitude(&myState[3],3)*mathVecMagnitude(toStation,3)))/18) +
-((0.06 - mathVecMagnitude(&myState[3], 3)) / .01) +
-8;
+
+((0.06 - mathVecMagnitude(&myState[3], 3)) / .01) + 8;
 //END::PROC::timeToMS
 }
-static float shoot (float myState[12], float target[3], unsigned int fire, char shooter, unsigned int otherSatellite)
+static void shoot (float myState[12], float target[12], unsigned int fire, char shooter, unsigned int otherSatellite)
 {
 //BEGIN::PROC::shoot
 float direction[3];
+
 float att_target[3];
+
 float myStateProjected[3];
+
 float targetProjected[3];
+float x;
+float y;
+float z;
+float myVel[3];
+float tVel[3];
+myVel[0] = myState[3] * 2;
+myVel[1] = myState[4] * 2;
+myVel[2] = myState[5] * 2;
+tVel[0] = target[3] * 2;
+tVel[1] = target[4] * 2;
+tVel[2] = target[5] * 2;
 
 // predict where I'll be in 2 seconds
-VMult(&myState[3], 2, myStateProjected);
+
+//VMult(&myState[3], 2, myStateProjected);
+VAdd(&myState[3], &myVel[3], myStateProjected);
 VAdd(myState, myStateProjected, myStateProjected);
 
+
+x = myState[9];
+y = myState[10];
+z = myState[11];
+DEBUG(("x: %f, y: %f, z: %f", x, y, z));
+
 // if target is the other satellite, find where he'll be in 2 seconds
+
 if (otherSatellite) {
-    VMult(&target[3], 2, targetProjected);
+
+   // VMult(&target[3], 2, targetProjected);
+    VAdd(&target[3], &tVel[3], targetProjected);
     VAdd(target, targetProjected, targetProjected);
+
 }
+
 else {
+
     VCopy(target, targetProjected);
+
 }
+
 VPoint(myStateProjected, targetProjected, att_target);
+
 ZRSetAttitudeTarget(att_target);
+
 mathVecSubtract(direction, target, myState, 3);
 
+
+
 if (fire && (acos(mathVecInner(&myState[6], direction, 3) / mathVecMagnitude(&myState[6], 3)) < (0.1))) {
+
     switch (shooter) {
+
         case 'L':
+
             Plaser();
+
             break;
+
         case 'T':
+
             Ptractor();
+
             break;
+
         case 'R':
+
             Prepulsor();
+
             break;
+
     }
+
 }
+
 else {
+
     DEBUG(("not in sight, or fire is false\n"));
+
 }
 //END::PROC::shoot
 }
