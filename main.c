@@ -273,17 +273,20 @@ float att_target[3];
 float myStateProjected[3];
 
 float targetProjected[3];
+
+float angle;
+float result[3];
 float x;
 float y;
 float z;
 float myVel[3];
 float tVel[3];
-myVel[0] = myState[3] * 2;
-myVel[1] = myState[4] * 2;
-myVel[2] = myState[5] * 2;
-tVel[0] = target[3] * 2;
-tVel[1] = target[4] * 2;
-tVel[2] = target[5] * 2;
+myVel[0] = myState[3] * 5;
+myVel[1] = myState[4] * 5;
+myVel[2] = myState[5] * 5;
+tVel[0] = target[3] * 5;
+tVel[1] = target[4] * 5;
+tVel[2] = target[5] * 5;
 
 // predict where I'll be in 2 seconds
 
@@ -295,7 +298,7 @@ VAdd(myState, myStateProjected, myStateProjected);
 x = myState[9];
 y = myState[10];
 z = myState[11];
-DEBUG(("x: %f, y: %f, z: %f", x, y, z));
+
 
 // if target is the other satellite, find where he'll be in 2 seconds
 
@@ -318,11 +321,12 @@ VPoint(myStateProjected, targetProjected, att_target);
 ZRSetAttitudeTarget(att_target);
 
 mathVecSubtract(direction, target, myState, 3);
+VSub(target, myState, result);
+angle = VAngle(&myState[6], result);
+DEBUG(("x: %f, y: %f, z: %f, angle: %f", x, y, z, angle));
 
-
-
-if (fire && (acos(mathVecInner(&myState[6], direction, 3) / mathVecMagnitude(&myState[6], 3)) < (0.1))) {
-
+if (fire && (acos(mathVecInner(&myState[6], direction, 3) / mathVecMagnitude(&myState[6], 3)) < (6))) {
+//changed 0.1 to 6: fires laser at opulens repeatedly
     switch (shooter) {
 
         case 'L':
