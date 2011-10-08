@@ -14,12 +14,12 @@ TAU = 6.28318;
 center[0] = 0;
 center[1] = 0.6;
 center[2] = 0;
-radius = .3;
+radius = .4;
 
 currentAngle = atan2f(myState[1] - center[1], myState[0] - center[0]);
 
   //tweak angleStep as neccesary
-angleStep = TAU / 90;
+angleStep = TAU / 88.5;
 
 //desiredAngularVelocity = TAU / 90;
 
